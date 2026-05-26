@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fuji-Haya Trivia Game</title>
+
+    <!-- FONT -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #0d0dcc;
+        --secondary: #013f8e;
+        --white: #ffffff;
+        --dark: #2e2e2e;
+        --light: #e6e8eb;
+        --yellow: #ffc107;
+        --bluegray: #607d8b;
+      }
+
+      body {
+        font-family: "Open Sans", sans-serif;
+        background: linear-gradient(135deg, var(--secondary), #ffffff);
+        min-height: 100vh;
+        overflow: hidden;
+        color: var(--white);
+      }
+
+      .container {
+        width: 100%;
+        height: 100vh;
+        padding: 30px 50px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* TOP BAR */
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .logo-box {
+        width: 220px;
+        height: 180px;
+        background: var(--primary);
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      }
+
+      .logo-box img {
+        width: 85%;
+        object-fit: contain;
+      }
+
+      .status-container {
+        display: flex;
+        gap: 20px;
+      }
+
+      .status-box {
+        background: var(--primary);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-radius: 999px;
+        padding: 20px 40px;
+        min-width: 250px;
+        text-align: center;
+        font-size: 2rem;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* GAME AREA */
+      .game-area {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 50px;
+        align-items: center;
+      }
+
+      /* QUESTION CARD */
+      .question-card {
+        background: var(--primary);
+        border: 4px solid var(--yellow);
+        border-radius: 40px;
+        padding: 50px;
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .question-title {
+        text-align: center;
+        font-family: "Montserrat", sans-serif;
+        font-size: 2rem;
+        margin-bottom: 40px;
+      }
+
+      .question-text {
+        font-size: 2.1rem;
+        text-align: center;
+        line-height: 1.6;
+        font-weight: 700;
+      }
+
+      /* OPTIONS */
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .option-btn {
+        background: var(--light);
+        border: 6px solid var(--yellow);
+        border-radius: 999px;
+        padding: 28px;
+        font-size: 2rem;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        color: var(--primary);
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      .option-btn:hover {
+        transform: translateY(-4px) scale(1.02);
+        background: white;
+      }
+
+      .option-btn.correct {
+        background: #ffc107;
+        color: white;
+        border-color: #e9af01;
+      }
+
+      .option-btn.wrong {
+        background: #f44336;
+        color: white;
+        border-color: #ff8a80;
+      }
+
+      /* START SCREEN */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .overlay-content {
+        background: var(--primary);
+        padding: 60px;
+        border-radius: 40px;
+        text-align: center;
+        width: 500px;
+        border: 5px solid var(--yellow);
+      }
+
+      .overlay-content h1 {
+        font-family: "Montserrat", sans-serif;
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .overlay-content p {
+        font-size: 1.2rem;
+        margin-bottom: 35px;
+        color: #ddd;
+      }
+
+      .start-btn {
+        background: var(--yellow);
+        border: none;
+        color: var(--dark);
+        padding: 20px 50px;
+        border-radius: 999px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: "Montserrat", sans-serif;
+        transition: 0.3s;
+      }
+
+      .start-btn:hover {
+        transform: scale(1.05);
+      }
+
+      /* TIMES UP MODAL */
+      .times-up {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+      }
+
+      .times-up-box {
+        background: var(--primary);
+        padding: 60px;
+        border-radius: 35px;
+        border: 5px solid var(--yellow);
+        text-align: center;
+        width: 450px;
+      }
+
+      .times-up-box h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .times-up-box button {
+        margin-top: 20px;
+        padding: 18px 45px;
+        border: none;
+        border-radius: 999px;
+        background: var(--yellow);
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1200px) {
+        body {
+          overflow: auto;
+        }
+
+        .container {
+          height: auto;
+        }
+
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .question-text {
+          font-size: 1.6rem;
+        }
+
+        .option-btn {
+          font-size: 1.4rem;
+        }
+
+        .top-bar {
+          flex-direction: column;
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- START OVERLAY -->
+    <div class="overlay" id="startOverlay">
+      <div class="overlay-content">
+        <h1>TRIVIA GAME</h1>
+        <p>Answer as many questions as you can before the timer ends!</p>
+
+        <button class="start-btn" onclick="startGame()">START GAME</button>
+      </div>
+    </div>
+
+    <!-- TIMES UP -->
+    <div class="times-up" id="timesUpModal">
+      <div class="times-up-box">
+        <h1>TIME'S UP!</h1>
+
+        <p style="font-size: 1.3rem; margin-top: 15px">
+          Questions have been shuffled!
+        </p>
+
+        <button onclick="restartGame()">PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- TOP -->
+      <div class="top-bar">
+        <div class="logo-box">
+          <!-- Replace with your Fuji-Haya logo -->
+          <img src="FHE_LOGO_2024.png" alt="logo" />
+        </div>
+
+        <div class="status-container">
+          <div class="status-box">
+            TIMER:
+            <span id="timer">20</span>
+          </div>
+
+          <div class="status-box">
+            POINTS:
+            <span id="score">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME -->
+      <div class="game-area">
+        <!-- QUESTION -->
+        <div class="question-card">
+          <div class="question-title">QUESTION:</div>
+
+          <div class="question-text" id="question">Press Start to begin!</div>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="options-container" id="optionsContainer"></div>
+      </div>
+    </div>
+
+    <script>
+      // QUESTIONS
+      const questions = [
+        {
+          question: "What does CPU stand for?",
+          options: [
+            "Central Processing Unit",
+            "Computer Processing Unit",
+            "Central Program Utility",
+            "Control Processing User",
+          ],
+          answer: "Central Processing Unit",
+        },
+
+        {
+          question: "Which language is used for web styling?",
+          options: ["Python", "CSS", "PHP", "Java"],
+          answer: "CSS",
+        },
+
+        {
+          question: "What does HTML stand for?",
+          options: [
+            "Hyper Text Markup Language",
+            "High Text Machine Language",
+            "Hyperlink Transfer Markup Language",
+            "Home Tool Markup Language",
+          ],
+          answer: "Hyper Text Markup Language",
+        },
+
+        {
+          question: "Which company created Laravel?",
+          options: ["Microsoft", "Taylor Otwell", "Google", "Meta"],
+          answer: "Taylor Otwell",
+        },
+
+        {
+          question: "Which symbol is used for IDs in CSS?",
+          options: [".", "#", "@", "$"],
+          answer: "#",
+        },
+
+        {
+          question: "Which tag is used for inserting images in HTML?",
+          options: ["<img>", "<image>", "<pic>", "<src>"],
+          answer: "<img>",
+        },
+      ];
+
+      let shuffledQuestions = [];
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timer = 20;
+      let countdown;
+
+      const timerDisplay = document.getElementById("timer");
+      const scoreDisplay = document.getElementById("score");
+      const questionDisplay = document.getElementById("question");
+      const optionsContainer = document.getElementById("optionsContainer");
+
+      // SHUFFLE FUNCTION
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+
+        return array;
+      }
+
+      // START GAME
+      function startGame() {
+        document.getElementById("startOverlay").style.display = "none";
+
+        initializeGame();
+
+        startTimer();
+      }
+
+      // INITIALIZE
+      function initializeGame() {
+        shuffledQuestions = shuffleArray([...questions]);
+
+        currentQuestionIndex = 0;
+
+        score = 0;
+
+        timer = 20;
+
+        scoreDisplay.textContent = score;
+
+        timerDisplay.textContent = timer;
+
+        loadQuestion();
+      }
+
+      // LOAD QUESTION
+      function loadQuestion() {
+        if (currentQuestionIndex >= shuffledQuestions.length) {
+          currentQuestionIndex = 0;
+
+          shuffledQuestions = shuffleArray([...questions]);
+        }
+
+        const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+        questionDisplay.textContent = currentQuestion.question;
+
+        optionsContainer.innerHTML = "";
+
+        const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+        shuffledOptions.forEach((option) => {
+          const button = document.createElement("button");
+
+          button.classList.add("option-btn");
+
+          button.textContent = option;
+
+          button.onclick = () => checkAnswer(button, option);
+
+          optionsContainer.appendChild(button);
+        });
+      }
+
+      // CHECK ANSWER
+      function checkAnswer(button, selectedOption) {
+        const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+
+        const buttons = document.querySelectorAll(".option-btn");
+
+        buttons.forEach((btn) => (btn.disabled = true));
+
+        if (selectedOption === correctAnswer) {
+          button.classList.add("correct");
+
+          score += 10;
+
+          scoreDisplay.textContent = score;
+        } else {
+          button.classList.add("wrong");
+
+          buttons.forEach((btn) => {
+            if (btn.textContent === correctAnswer) {
+              btn.classList.add("correct");
+            }
+          });
+        }
+
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          loadQuestion();
+        }, 1200);
+      }
+
+      // TIMER
+      function startTimer() {
+        clearInterval(countdown);
+
+        countdown = setInterval(() => {
+          timer--;
+
+          timerDisplay.textContent = timer;
+
+          if (timer <= 0) {
+            clearInterval(countdown);
+
+            showTimesUp();
+          }
+        }, 1000);
+      }
+
+      // TIMES UP
+      function showTimesUp() {
+        document.getElementById("timesUpModal").style.display = "flex";
+      }
+
+      // RESTART
+      function restartGame() {
+        document.getElementById("timesUpModal").style.display = "none";
+
+        initializeGame();
+
+        startTimer();
+      }
+    </script>
+  </body>
+</html>
